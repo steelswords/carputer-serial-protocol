@@ -1,0 +1,91 @@
+syntax = "proto3";
+import "timestamp.proto";
+
+/*enum MessageType {
+    None = 0;
+    Heartbeat = 1;
+    CreateWidget
+
+};
+
+*/
+
+message Geometry {
+    uint32 topLeftX = 1;
+    uint32 topLeftY = 2;
+    uint32 bottomRightX = 3;
+    uint32 bottomRightY = 4;
+}
+
+enum WidgetType {
+    None = 0;
+    StaticText = 1;
+    UpdateableText = 2;
+}
+
+enum ResponseStatus {
+    option allow_alias = true;
+    Unknown = 0;
+    Ok = 1;
+    Ack = 1;
+
+    NotOk = 2;
+    Nack = 2;
+
+    Error = 3;
+}
+
+message MessageHeader {
+    uint32 sequence = 1;
+    uint32 size = 3;
+}
+
+message HeartbeatMessage {
+    google.protobuf.Timestamp timestamp = 2;
+}
+
+message HeartbeatResponse {
+    ResponseStatus status = 1;
+}
+
+message CreateWidgetRequest {
+    uint32 requestNumber = 1;
+    Geometry requestedGeometry = 2;
+    WidgetType widgetType = 3;
+}
+
+message CreateWidgetResponse {
+    uint32 requestNumber = 1;
+    uint32 createdWidgetId = 2;
+    Geometry allocatedGeometry = 3;
+    ResponseStatus status = 4;
+}
+
+message GenericResponse {
+    uint32 requestNumber = 1;
+    ResponseStatus status = 2;
+}
+
+message UpdateWidgetRequest {
+    uint32 requestNumber = 1;
+    uint32 targetWidget = 2;
+    bytes data = 3;
+}
+
+message SerialMessage {
+    MessageHeader header = 1;
+    oneof request {
+        CreateWidgetRequest createWidgetRequest = 100;
+        UpdateWidgetRequest updateWidgetRequest = 101;
+        HeartbeatMessage heartbeatMessage = 102;
+    }
+    oneof response {
+        HeartbeatResponse heartbeatResponse = 200;
+        CreateWidgetResponse createWidgetResponse = 201;
+        GenericResponse genericResponse = 202;
+    }
+}
+
+message SimpleMessage {
+    uint32 number = 1;
+}
